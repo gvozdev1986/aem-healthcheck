@@ -1,4 +1,4 @@
-package com.shinesolutions.healthcheck.constants;
+package com.hvozdzeu.healthcheck.constants;
 
 import org.osgi.framework.Constants;
 
@@ -15,6 +15,7 @@ public class HealthCheckConstants {
     public static final String JSON_PARAM_TIME_MS = "timeMs";
     public static final String JSON_PARAM_MESSAGE_LOG = "messageLog";
     public static final String JSON_PARAM_RESULTS = "results";
+    public static final String JSON_PARAM_TOTAL = "total";
     public static final String JSON_PARAM_M_BEAN_NAME = "mBeanName";
     public static final String JSON_PARAM_TITLE = "title";
     public static final String JSON_PARAM_SERVICE_ID = "serviceId";

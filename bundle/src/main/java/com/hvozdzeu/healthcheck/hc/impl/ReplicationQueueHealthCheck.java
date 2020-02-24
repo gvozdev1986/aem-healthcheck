@@ -1,8 +1,9 @@
-package com.shinesolutions.healthcheck.hc.impl;
+package com.hvozdzeu.healthcheck.hc.impl;
 
 import com.day.cq.replication.Agent;
 import com.day.cq.replication.AgentManager;
 import com.day.cq.replication.ReplicationQueue;
+import com.hvozdzeu.healthcheck.constants.HealthCheckConstants;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.sling.hc.annotations.SlingHealthCheck;
 import org.apache.sling.hc.api.HealthCheck;
@@ -10,8 +11,6 @@ import org.apache.sling.hc.api.Result;
 import org.apache.sling.hc.util.FormattingResultLog;
 
 import java.util.Map;
-
-import static com.shinesolutions.healthcheck.constants.HealthCheckConstants.MAX_REPLICATION_TRIES;
 
 @SlingHealthCheck(
         name = "Replication Queue Health Check",
@@ -42,8 +41,8 @@ public class ReplicationQueueHealthCheck implements HealthCheck {
                 ReplicationQueue replicationQueue = agent.getQueue();
                 if(!replicationQueue.entries().isEmpty()) {
                     ReplicationQueue.Entry firstEntry = replicationQueue.entries().get(0);
-                    if(firstEntry.getNumProcessed() > MAX_REPLICATION_TRIES) {
-                        resultLog.warn("Agent [{}] number of retries: {}, expected number of retries <= {}", agent.getId(), firstEntry.getNumProcessed(), MAX_REPLICATION_TRIES);
+                    if(firstEntry.getNumProcessed() > HealthCheckConstants.MAX_REPLICATION_TRIES) {
+                        resultLog.warn("Agent [{}] number of retries: {}, expected number of retries <= {}", agent.getId(), firstEntry.getNumProcessed(), HealthCheckConstants.MAX_REPLICATION_TRIES);
                     }
                 } else {
                     resultLog.debug("Agent [{}] replication queue {} is empty.", replicationQueue.getName());

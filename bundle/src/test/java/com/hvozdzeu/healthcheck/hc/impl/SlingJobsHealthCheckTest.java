@@ -1,4 +1,4 @@
-package com.shinesolutions.healthcheck.hc.impl;
+package com.hvozdzeu.healthcheck.hc.impl;
 
 import org.apache.sling.event.jobs.JobManager;
 import org.apache.sling.event.jobs.Statistics;

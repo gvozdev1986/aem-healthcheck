@@ -1,5 +1,6 @@
-package com.shinesolutions.healthcheck.servlets;
+package com.hvozdzeu.healthcheck.servlets;
 
+import com.hvozdzeu.healthcheck.constants.HealthCheckConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Deactivate;
@@ -29,8 +30,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.shinesolutions.healthcheck.constants.HealthCheckConstants.*;
-import static com.shinesolutions.healthcheck.utils.HealthCheckUtils.getResultList;
+import static com.hvozdzeu.healthcheck.constants.HealthCheckConstants.JSON_PARAM_MESSAGE_LOG;
+import static com.hvozdzeu.healthcheck.constants.HealthCheckConstants.MESSAGE_LOG_FORMAT;
+import static com.hvozdzeu.healthcheck.utils.HealthCheckUtils.*;
 
 @SlingServlet(
         name = "Health Check Executor Servlet",
@@ -43,24 +45,41 @@ public class HealthCheckExecutorServlet extends SlingSafeMethodsServlet {
 
     private static final Logger logger = LoggerFactory.getLogger(HealthCheckExecutorServlet.class);
 
+    private static Map<String, Integer> totalResultMap;
+
+    static {
+        totalResultMap = new HashMap<>();
+        totalResultMap.put("WARN", 0);
+        totalResultMap.put("INFO", 0);
+        totalResultMap.put("OK", 0);
+        totalResultMap.put("IMPORTANT", 0);
+        totalResultMap.put("CRITICAL", 0);
+        totalResultMap.put("HEALTH_CHECK_ERROR", 0);
+    }
+
     @Reference
     protected HealthCheckExecutor healthCheckExecutor;
 
-    private static void generateResponse(List<HealthCheckExecutionResult> executionResults,
-                                         JSONObject resultJson) throws JSONException {
+    private static void generateResponse(List<HealthCheckExecutionResult> executionResults, JSONObject resultJson) throws JSONException {
         JSONArray resultsJsonArr = new JSONArray();
-        resultJson.put(JSON_PARAM_RESULTS, resultsJsonArr);
+        resultJson.put(HealthCheckConstants.JSON_PARAM_RESULTS, resultsJsonArr);
 
         for (HealthCheckExecutionResult healthCheckResult : executionResults) {
             JSONObject result = new JSONObject();
-            result.put(JSON_PARAM_NAME, healthCheckResult.getHealthCheckMetadata() != null ? healthCheckResult.getHealthCheckMetadata().getName() : "");
-            result.put(JSON_PARAM_STATUS, healthCheckResult.getHealthCheckResult().getStatus());
-            result.put(JSON_PARAM_TIME_MS, healthCheckResult.getElapsedTimeInMs());
+            result.put(HealthCheckConstants.JSON_PARAM_NAME, healthCheckResult.getHealthCheckMetadata() != null ? healthCheckResult.getHealthCheckMetadata().getName() : "");
+
+            String status = healthCheckResult.getHealthCheckResult().getStatus().toString();
+            result.put(HealthCheckConstants.JSON_PARAM_STATUS, status);
+            buildMapCountStatus(totalResultMap, status);
+
+            result.put(HealthCheckConstants.JSON_PARAM_TIME_MS, healthCheckResult.getElapsedTimeInMs());
             getHealthCheckMessageLog(healthCheckResult, result);
             getHealthCheckMetadata(healthCheckResult, result);
             resultsJsonArr.put(result);
         }
+        resultJson.put(HealthCheckConstants.JSON_PARAM_TOTAL, buildTotalResult(totalResultMap));
     }
+
 
     private static void getHealthCheckMessageLog(HealthCheckExecutionResult healthCheckResult, JSONObject result) throws JSONException {
         List<String> messages = new ArrayList<>();
@@ -73,12 +92,12 @@ public class HealthCheckExecutorServlet extends SlingSafeMethodsServlet {
     private static void getHealthCheckMetadata(HealthCheckExecutionResult healthCheckResult, JSONObject result) throws JSONException {
         HealthCheckMetadata healthCheckMetadata = healthCheckResult.getHealthCheckMetadata();
         Map<String, Object> map = new HashMap<>();
-        map.put(JSON_PARAM_M_BEAN_NAME, healthCheckMetadata.getMBeanName());
-        map.put(JSON_PARAM_TITLE, healthCheckMetadata.getTitle());
-        map.put(JSON_PARAM_SERVICE_ID, healthCheckMetadata.getServiceId());
-        map.put(JSON_PARAM_TAGS, healthCheckMetadata.getTags());
-        map.put(JSON_PARAM_ASYNC_CRON_EXPRESSION, healthCheckMetadata.getAsyncCronExpression());
-        result.put(JSON_PARAM_HEALTH_CHECK_METADATA, map);
+        map.put(HealthCheckConstants.JSON_PARAM_M_BEAN_NAME, healthCheckMetadata.getMBeanName());
+        map.put(HealthCheckConstants.JSON_PARAM_TITLE, healthCheckMetadata.getTitle());
+        map.put(HealthCheckConstants.JSON_PARAM_SERVICE_ID, healthCheckMetadata.getServiceId());
+        map.put(HealthCheckConstants.JSON_PARAM_TAGS, healthCheckMetadata.getTags());
+        map.put(HealthCheckConstants.JSON_PARAM_ASYNC_CRON_EXPRESSION, healthCheckMetadata.getAsyncCronExpression());
+        result.put(HealthCheckConstants.JSON_PARAM_HEALTH_CHECK_METADATA, map);
     }
 
     @Activate
@@ -94,12 +113,12 @@ public class HealthCheckExecutorServlet extends SlingSafeMethodsServlet {
     @Override
     protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response)
             throws IOException {
-        response.setContentType(APPLICATION_JSON);
-        response.setHeader(CACHE_CONTROL, CACHE_CONTROL_VALUE);
+        response.setContentType(HealthCheckConstants.APPLICATION_JSON);
+        response.setHeader(HealthCheckConstants.CACHE_CONTROL, HealthCheckConstants.CACHE_CONTROL_VALUE);
 
-        String tagsStr = StringUtils.defaultString(request.getParameter(PARAM_TAGS));
-        String[] tags = tagsStr.split(REGEX_TAG_FORMAT);
-        String combineTagsOr = StringUtils.defaultString(request.getParameter(PARAM_COMBINE_TAGS_OR), "true");
+        String tagsStr = StringUtils.defaultString(request.getParameter(HealthCheckConstants.PARAM_TAGS));
+        String[] tags = tagsStr.split(HealthCheckConstants.REGEX_TAG_FORMAT);
+        String combineTagsOr = StringUtils.defaultString(request.getParameter(HealthCheckConstants.PARAM_COMBINE_TAGS_OR), "true");
 
         HealthCheckExecutionOptions options = new HealthCheckExecutionOptions();
         options.setCombineTagsWithOr(Boolean.parseBoolean(combineTagsOr));

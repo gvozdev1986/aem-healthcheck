@@ -1,4 +1,4 @@
-package com.shinesolutions.healthcheck.constants;
+package com.hvozdzeu.healthcheck.constants;
 
 public class HealthCheckMessage {
 

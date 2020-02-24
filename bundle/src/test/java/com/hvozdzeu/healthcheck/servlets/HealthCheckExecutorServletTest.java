@@ -1,5 +1,5 @@
 
-package com.shinesolutions.healthcheck.servlets;
+package com.hvozdzeu.healthcheck.servlets;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;

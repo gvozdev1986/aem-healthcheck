@@ -1,8 +1,9 @@
-package com.shinesolutions.healthcheck.hc.impl;
+package com.hvozdzeu.healthcheck.hc.impl;
 
 import java.util.Arrays;
 import java.util.Dictionary;
 
+import com.hvozdzeu.healthcheck.constants.HealthCheckConstants;
 import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Deactivate;
 import org.apache.felix.scr.annotations.Property;
@@ -13,10 +14,7 @@ import org.apache.sling.hc.api.Result;
 import org.apache.sling.hc.util.FormattingResultLog;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.Constants;
 import org.osgi.service.component.ComponentContext;
-
-import static com.shinesolutions.healthcheck.constants.HealthCheckConstants.*;
 
 @SlingHealthCheck(
     name = "Bundle Health Check",
@@ -34,9 +32,9 @@ public class ActiveBundleHealthCheck implements HealthCheck {
 
     private static boolean isActiveBundle(Bundle bundle) {
         return (bundle.getState() == Bundle.ACTIVE ||
-            bundle.getHeaders().get(BUNDLE_FRAGMENT_HOST) != null) ||
-            (bundle.getHeaders().get(BUNDLE_ACTIVATION_POLICY) != null &&
-                bundle.getHeaders().get(BUNDLE_ACTIVATION_POLICY).equals(LAZY_ACTIVATION_POLICY));
+            bundle.getHeaders().get(HealthCheckConstants.BUNDLE_FRAGMENT_HOST) != null) ||
+            (bundle.getHeaders().get(HealthCheckConstants.BUNDLE_ACTIVATION_POLICY) != null &&
+                bundle.getHeaders().get(HealthCheckConstants.BUNDLE_ACTIVATION_POLICY).equals(HealthCheckConstants.LAZY_ACTIVATION_POLICY));
     }
 
     @Activate

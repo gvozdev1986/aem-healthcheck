@@ -1,4 +1,4 @@
-package com.shinesolutions.healthcheck.hc.impl;
+package com.hvozdzeu.healthcheck.hc.impl;
 
 import com.day.cq.replication.Agent;
 import com.day.cq.replication.AgentConfig;
