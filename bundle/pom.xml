@@ -131,6 +131,9 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>com.hvozdzeu.aem-healthcheck</Bundle-SymbolicName>
+                        <Sling-Model-Packages>
+                            com.hvozdzeu.healthcheck.models
+                        </Sling-Model-Packages>
                     </instructions>
                 </configuration>
             </plugin>

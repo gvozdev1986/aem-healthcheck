@@ -1,5 +1,26 @@
 package com.hvozdzeu.healthcheck.servlets;
 
+import static com.hvozdzeu.healthcheck.constants.HealthCheckConstants.ERROR_CREATE_REPORT;
+import static com.hvozdzeu.healthcheck.utils.HealthCheckUtils.buildMapCountStatus;
+import static com.hvozdzeu.healthcheck.utils.HealthCheckUtils.buildMessagesUrl;
+import static com.hvozdzeu.healthcheck.utils.HealthCheckUtils.buildTotalResult;
+import static com.hvozdzeu.healthcheck.utils.HealthCheckUtils.getResultList;
+import static com.hvozdzeu.healthcheck.utils.HealthCheckUtils.initTotalMap;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.hvozdzeu.healthcheck.beans.Items;
+import com.hvozdzeu.healthcheck.beans.Messages;
+import com.hvozdzeu.healthcheck.beans.Metadata;
+import com.hvozdzeu.healthcheck.beans.Report;
+import com.hvozdzeu.healthcheck.beans.Response;
 import com.hvozdzeu.healthcheck.constants.HealthCheckConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.felix.scr.annotations.Activate;
@@ -11,9 +32,6 @@ import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.servlets.HttpConstants;
 import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
-import org.apache.sling.commons.json.JSONArray;
-import org.apache.sling.commons.json.JSONException;
-import org.apache.sling.commons.json.JSONObject;
 import org.apache.sling.hc.api.ResultLog;
 import org.apache.sling.hc.api.execution.HealthCheckExecutionOptions;
 import org.apache.sling.hc.api.execution.HealthCheckExecutionResult;
@@ -22,17 +40,6 @@ import org.apache.sling.hc.util.HealthCheckMetadata;
 import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static com.hvozdzeu.healthcheck.constants.HealthCheckConstants.JSON_PARAM_MESSAGE_LOG;
-import static com.hvozdzeu.healthcheck.constants.HealthCheckConstants.MESSAGE_LOG_FORMAT;
-import static com.hvozdzeu.healthcheck.utils.HealthCheckUtils.*;
 
 @SlingServlet(
         name = "Health Check Executor Servlet",
@@ -44,8 +51,8 @@ import static com.hvozdzeu.healthcheck.utils.HealthCheckUtils.*;
 public class HealthCheckExecutorServlet extends SlingSafeMethodsServlet {
 
     private static final Logger logger = LoggerFactory.getLogger(HealthCheckExecutorServlet.class);
-
     private static Map<String, Integer> totalResultMap;
+    public static final List<Items> resultList = new ArrayList<>();
 
     static {
         totalResultMap = new HashMap<>();
@@ -55,54 +62,66 @@ public class HealthCheckExecutorServlet extends SlingSafeMethodsServlet {
         totalResultMap.put("IMPORTANT", 0);
         totalResultMap.put("CRITICAL", 0);
         totalResultMap.put("HEALTH_CHECK_ERROR", 0);
+        totalResultMap.put("DEBUG", 0);
     }
 
     @Reference
     protected HealthCheckExecutor healthCheckExecutor;
 
-    private static void generateResponse(List<HealthCheckExecutionResult> executionResults, JSONObject resultJson) throws JSONException {
-        JSONArray resultsJsonArr = new JSONArray();
-        resultJson.put(HealthCheckConstants.JSON_PARAM_RESULTS, resultsJsonArr);
-
-        for (HealthCheckExecutionResult healthCheckResult : executionResults) {
-            JSONObject result = new JSONObject();
-            result.put(HealthCheckConstants.JSON_PARAM_NAME, healthCheckResult.getHealthCheckMetadata() != null ? healthCheckResult.getHealthCheckMetadata().getName() : "");
-
-            String status = healthCheckResult.getHealthCheckResult().getStatus().toString();
-            result.put(HealthCheckConstants.JSON_PARAM_STATUS, status);
-            buildMapCountStatus(totalResultMap, status);
-
-            result.put(HealthCheckConstants.JSON_PARAM_TIME_MS, healthCheckResult.getElapsedTimeInMs());
-            getHealthCheckMessageLog(healthCheckResult, result);
-            getHealthCheckMetadata(healthCheckResult, result);
-            resultsJsonArr.put(result);
-        }
-        resultJson.put(HealthCheckConstants.JSON_PARAM_TOTAL, buildTotalResult(totalResultMap));
-    }
-
-
-    private static void getHealthCheckMessageLog(HealthCheckExecutionResult healthCheckResult, JSONObject result) throws JSONException {
-        List<String> messages = new ArrayList<>();
-        for (ResultLog.Entry entry : getResultList(healthCheckResult.getHealthCheckResult().iterator())) {
-            messages.add(String.format(MESSAGE_LOG_FORMAT, entry.getStatus().toString(), entry.getMessage()));
-        }
-        result.put(JSON_PARAM_MESSAGE_LOG, messages);
-    }
-
-    private static void getHealthCheckMetadata(HealthCheckExecutionResult healthCheckResult, JSONObject result) throws JSONException {
-        HealthCheckMetadata healthCheckMetadata = healthCheckResult.getHealthCheckMetadata();
-        Map<String, Object> map = new HashMap<>();
-        map.put(HealthCheckConstants.JSON_PARAM_M_BEAN_NAME, healthCheckMetadata.getMBeanName());
-        map.put(HealthCheckConstants.JSON_PARAM_TITLE, healthCheckMetadata.getTitle());
-        map.put(HealthCheckConstants.JSON_PARAM_SERVICE_ID, healthCheckMetadata.getServiceId());
-        map.put(HealthCheckConstants.JSON_PARAM_TAGS, healthCheckMetadata.getTags());
-        map.put(HealthCheckConstants.JSON_PARAM_ASYNC_CRON_EXPRESSION, healthCheckMetadata.getAsyncCronExpression());
-        result.put(HealthCheckConstants.JSON_PARAM_HEALTH_CHECK_METADATA, map);
-    }
-
     @Activate
     protected void activate(ComponentContext context) {
         logger.debug("Starting HealthCheckExecutorServlet");
+    }
+
+    private static List<Messages> getHealthCheckMessageLog(HealthCheckExecutionResult healthCheckResult) {
+        List<Messages> messagesList = new ArrayList<>();
+        for (ResultLog.Entry entry : getResultList(healthCheckResult.getHealthCheckResult().iterator())) {
+            Messages messages = new Messages();
+            messages.setLogType(entry.getStatus().toString());
+            messages.setMessage(entry.getMessage());
+            messagesList.add(messages);
+        }
+        return messagesList;
+    }
+
+    private static Metadata getHealthCheckMetadata(HealthCheckExecutionResult healthCheckResult) {
+        HealthCheckMetadata healthCheckMetadata = healthCheckResult.getHealthCheckMetadata();
+        Metadata item = new Metadata();
+        item.setmBeanName(healthCheckMetadata.getMBeanName());
+        item.setTitle(healthCheckMetadata.getTitle());
+        item.setServiceId(healthCheckMetadata.getServiceId());
+        item.setTags(healthCheckMetadata.getTags());
+        item.setAsyncCronExpression(healthCheckMetadata.getAsyncCronExpression());
+        return item;
+    }
+
+    private static Response generateResponse(List<HealthCheckExecutionResult> executionResults) {
+        List<Items> checkResultList = new ArrayList<>();
+        int i = 0;
+        for (HealthCheckExecutionResult healthCheckResult : executionResults) {
+            Items checkResult = new Items();
+            Report report = new Report();
+            report.setName(healthCheckResult.getHealthCheckMetadata() != null ? healthCheckResult.getHealthCheckMetadata().getName() : "");
+            report.setStatus(healthCheckResult.getHealthCheckResult().getStatus().toString());
+            report.setElapsedTimeInMs(healthCheckResult.getElapsedTimeInMs());
+            report.setMetadata(getHealthCheckMetadata(healthCheckResult));
+            report.setMessages(getHealthCheckMessageLog(healthCheckResult));
+            initTotalMap(totalResultMap);
+            buildMapCountStatus(totalResultMap, healthCheckResult.getHealthCheckResult().getStatus().toString());
+            checkResult.setReport(report);
+            checkResultList.add(checkResult);
+            i++;
+            report.setMessagesUrl(buildMessagesUrl(i));
+        }
+        resultList.addAll(checkResultList);
+        return getResponse(checkResultList);
+    }
+
+    private static Response getResponse(List<Items> checkResultList) {
+        Response response = new Response();
+        response.setItems(checkResultList);
+        response.setTotal(buildTotalResult(totalResultMap));
+        return response;
     }
 
     @Deactivate
@@ -139,17 +158,10 @@ public class HealthCheckExecutorServlet extends SlingSafeMethodsServlet {
             response.setStatus(HttpServletResponse.SC_OK);
         }
 
-        JSONObject resultJson = getJsonObject(results);
-        response.getWriter().write(resultJson.toString());
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.enable(SerializationFeature.WRAP_ROOT_VALUE);
+        String json = mapper.writeValueAsString(generateResponse(results));
+        response.getWriter().write(StringUtils.isNotEmpty(json) ? json : ERROR_CREATE_REPORT);
     }
 
-    private JSONObject getJsonObject(List<HealthCheckExecutionResult> results) {
-        JSONObject resultJson = new JSONObject();
-        try {
-            generateResponse(results, resultJson);
-        } catch (JSONException ex) {
-            logger.error("Could not serialize result into JSON", ex);
-        }
-        return resultJson;
-    }
 }

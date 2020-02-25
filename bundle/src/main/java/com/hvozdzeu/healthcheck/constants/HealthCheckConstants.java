@@ -33,6 +33,18 @@ public class HealthCheckConstants {
     public static final String BUNDLE_ACTIVATION_POLICY = Constants.BUNDLE_ACTIVATIONPOLICY;
     public static final String LAZY_ACTIVATION_POLICY = "lazy";
 
+    public static final String HTTP_PARAM_REPORT_ID = "reportId";
+
+    public static final String ERROR_CREATE_REPORT = "{\"error\": \"404\",\"message\": \"Can't create report\"}";
+
+    public static final String WARN_TYPE = "WARN";
+    public static final String INFO_TYPE = "INFO";
+    public static final String OK_TYPE = "OK";
+    public static final String IMPORTANT_TYPE = "IMPORTANT";
+    public static final String CRITICAL_TYPE = "CRITICAL";
+    public static final String HEALTH_CHECK_ERROR_TYPE = "HEALTH_CHECK_ERROR";
+    public static final String DEBUG_TYPE = "DEBUG";
+
     private HealthCheckConstants() {
     }
 }

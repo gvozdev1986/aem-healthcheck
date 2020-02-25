@@ -1,21 +1,21 @@
 package com.hvozdzeu.healthcheck.beans;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Response {
 
-    private List<Result> results;
+    private List<Items> items;
     private Total total;
 
-    public List<Result> getResults() {
-        return results;
+    public List<Items> getItems() {
+        return items;
     }
 
-    public void setResults(List<Result> results) {
-        this.results = results;
+    public void setItems(List<Items> items) {
+        this.items = items;
     }
 
     public Total getTotal() {
@@ -29,8 +29,8 @@ public class Response {
     @Override
     public String toString() {
         return "Response{" +
-                "results=" + results +
-                ", total=" + total +
-                '}';
+            "healthCheckResult=" + items +
+            ", healthCheckTotalResult=" + total +
+            '}';
     }
 }
