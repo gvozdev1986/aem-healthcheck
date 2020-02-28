@@ -3,5 +3,5 @@
     jcr:primaryType="cq:Page">
     <jcr:content
         jcr:primaryType="cq:PageContent"
-        sling:resourceType="healthcheck/report/messages"/>
+        sling:resourceType="healthcheck/components/content/report"/>
 </jcr:root>

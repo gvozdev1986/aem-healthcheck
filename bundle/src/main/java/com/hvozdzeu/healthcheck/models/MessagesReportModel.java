@@ -27,7 +27,7 @@ import org.apache.sling.models.annotations.injectorspecific.Self;
 
 @Model(
     adaptables = {SlingHttpServletRequest.class, Resource.class},
-    resourceType = {"healthcheck/report/messages"},
+    resourceType = {"healthcheck/components/content/report"},
     defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL
 )
 @Exporter(name = "jackson", extensions = "json", selector = "report", options = {
