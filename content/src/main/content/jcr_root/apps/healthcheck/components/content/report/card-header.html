@@ -1,11 +1,11 @@
 <sly data-sly-use.langModel="${'com.hvozdzeu.healthcheck.models.LanguageModel'}">
     <div class="card">
         <div class="card-header">
-            <i class="fa fa-bars btnCard" data-toggle="collapse" data-target="#healthDetailCollapse"
+            <i class="fa fa-bars btnCard collapsed" data-toggle="collapse" data-target="#healthDetailCollapse"
                aria-expanded="false" aria-controls="healthDetailCollapse"></i>
             <span style="margin-left: 5px;">AEM Instance Health Check Report</span>
         </div>
-        <div class="collapse" id="healthDetailCollapse">
+        <div class="collapse show" id="healthDetailCollapse">
             <div class="card-body">
                 <h4 class="card-title">${langModel.lblInstInformation}</h4>
                 <table class="table table-sm">

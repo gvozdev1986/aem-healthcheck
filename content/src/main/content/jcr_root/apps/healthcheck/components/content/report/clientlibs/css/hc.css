@@ -81,3 +81,9 @@
     outline: none;
 }
 
+.cardHeaderItemReport {
+    height: 2px;
+    background-color: #343a40;
+    color: #fff;
+}
+

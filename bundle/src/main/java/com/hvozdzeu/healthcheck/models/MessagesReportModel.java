@@ -1,18 +1,5 @@
 package com.hvozdzeu.healthcheck.models;
 
-import static com.hvozdzeu.healthcheck.constants.HealthCheckConstants.ERROR_CREATE_REPORT;
-import static com.hvozdzeu.healthcheck.constants.HealthCheckConstants.HTTP_PARAM_REPORT_ID;
-import static com.hvozdzeu.healthcheck.servlets.HealthCheckExecutorServlet.resultList;
-import static com.hvozdzeu.healthcheck.utils.HealthCheckUtils.buildBackUrl;
-import static com.hvozdzeu.healthcheck.utils.HealthCheckUtils.buildMapCountStatus;
-import static com.hvozdzeu.healthcheck.utils.HealthCheckUtils.initTotalMap;
-
-import javax.annotation.PostConstruct;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.hvozdzeu.healthcheck.beans.Messages;
@@ -25,21 +12,31 @@ import org.apache.sling.models.annotations.ExporterOption;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.Self;
 
+import javax.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static com.hvozdzeu.healthcheck.constants.HealthCheckConstants.ERROR_CREATE_REPORT;
+import static com.hvozdzeu.healthcheck.constants.HealthCheckConstants.HTTP_PARAM_REPORT_ID;
+import static com.hvozdzeu.healthcheck.servlets.HealthCheckExecutorServlet.resultList;
+import static com.hvozdzeu.healthcheck.utils.HealthCheckUtils.*;
+
 @Model(
-    adaptables = {SlingHttpServletRequest.class, Resource.class},
-    resourceType = {"healthcheck/components/content/report"},
-    defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL
+        adaptables = {SlingHttpServletRequest.class, Resource.class},
+        resourceType = {"healthcheck/components/content/report"},
+        defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL
 )
 @Exporter(name = "jackson", extensions = "json", selector = "report", options = {
-    @ExporterOption(name = "MapperFeature.SORT_PROPERTIES_ALPHABETICALLY", value = "true"),
-    @ExporterOption(name = "SerializationFeature.WRITE_DATES_AS_TIMESTAMPS", value = "false")
+        @ExporterOption(name = "MapperFeature.SORT_PROPERTIES_ALPHABETICALLY", value = "true"),
+        @ExporterOption(name = "SerializationFeature.WRITE_DATES_AS_TIMESTAMPS", value = "false")
 })
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class MessagesReportModel {
 
     @Self
     private SlingHttpServletRequest request;
-
     private Metadata metadata;
     @JsonIgnore
     private Integer reportId;
@@ -47,7 +44,6 @@ public class MessagesReportModel {
     private List<Messages> messagesList;
     private String backUrl;
     private Map<String, Integer> totalTypes;
-
 
     @PostConstruct
     private void init() {
@@ -98,4 +94,5 @@ public class MessagesReportModel {
     public Map<String, Integer> getTotalTypes() {
         return totalTypes;
     }
+
 }

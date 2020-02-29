@@ -9,7 +9,7 @@
             <sly data-sly-use.report="com.hvozdzeu.healthcheck.models.TotalReportModel">
                 <ul data-sly-list.item="${report.response.items}" data-sly-unwrap>
                     <div class="card">
-                        <div class="card-header" style="height: 2px;">
+                        <div class="card-header cardHeaderItemReport">
                             <p class="reportCardHeaderLbl">
                                 <i class="${item.report.faIcon.faIcon}"
                                    style="color: ${item.report.faIcon.color @ context='styleString'}"></i>
@@ -20,7 +20,31 @@
                                 Name: ${item.report.name}</p>
                             <p class="card-text-hc" style="font-size: 13px;">Status: ${item.report.status}</p>
                             <p class="card-text-hc" style="font-size: 13px;">Tags: ${item.report.metadata.tags}</p>
-                            <button class="btn messageBtm" onclick="openMessage(${itemList.index @ context='scriptString'});"><i class="fa fa-book"></i></button>
+                            <button id="messageBtnModel_${itemList.index @ context='scriptString'}"
+                                    class="btn messageBtm"
+                                    data-toggle="modal"
+                                    data-target="#myModal_${itemList.index @ context='scriptString'}"><i
+                                    class="fa fa-book"></i></button>
+                            <div class="modal fade" id="myModal_${itemList.index @ context='scriptString'}" role="dialog">
+                                <sly data-sly-use.modalReport="${'com.hvozdzeu.healthcheck.models.MessagesReportModel' @ reportId='1'}"  data-sly-unwrap>
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h4 class="modal-title">Modal Header</h4>
+                                            </div>
+                                            <div class="modal-body">
+                                                <ul data-sly-list.itemModelReport="${modalReport.messagesList}" data-sly-unwrap>
+                                                    <p>[${itemModelReport.logType}] ${itemModelReport.message}</p>
+                                                </ul>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-default" data-dismiss="modal">Close
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </sly>
+                            </div>
                         </div>
                         <div class="card-footer text-muted" style="height: 2px;">
                             <p class="card-text-hc tagsLbl">Tags: ${item.report.metadata.tags}</p>
@@ -35,8 +59,3 @@
         </div>
     </div>
 </div>
-<script>
-    function openMessage(index) {
-        console.log(index);
-    }
-</script>
