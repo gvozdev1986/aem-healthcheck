@@ -20,7 +20,7 @@
                                 Name: ${item.report.name}</p>
                             <p class="card-text-hc" style="font-size: 13px;">Status: ${item.report.status}</p>
                             <p class="card-text-hc" style="font-size: 13px;">Tags: ${item.report.metadata.tags}</p>
-                            <button class="btn messageBtm" type="submit"><i class="fa fa-book"></i></button>
+                            <button class="btn messageBtm" onclick="openMessage(${itemList.index @ context='scriptString'});"><i class="fa fa-book"></i></button>
                         </div>
                         <div class="card-footer text-muted" style="height: 2px;">
                             <p class="card-text-hc tagsLbl">Tags: ${item.report.metadata.tags}</p>
@@ -35,3 +35,8 @@
         </div>
     </div>
 </div>
+<script>
+    function openMessage(index) {
+        console.log(index);
+    }
+</script>
