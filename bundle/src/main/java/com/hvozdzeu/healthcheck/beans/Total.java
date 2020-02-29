@@ -78,17 +78,4 @@ public class Total {
         this.debug = debug;
     }
 
-    @Override
-    public String toString() {
-        return "Total{" +
-            "totalItems=" + totalItems +
-            ", warn=" + warn +
-            ", info=" + info +
-            ", ok=" + ok +
-            ", important=" + important +
-            ", critical=" + critical +
-            ", healthCheckError=" + healthCheckError +
-            ", debug=" + debug +
-            '}';
-    }
 }

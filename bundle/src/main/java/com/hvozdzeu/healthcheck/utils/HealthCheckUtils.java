@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.hvozdzeu.healthcheck.beans.FaIcon;
 import com.hvozdzeu.healthcheck.beans.Total;
 import org.apache.sling.hc.api.ResultLog;
 
@@ -85,6 +86,39 @@ public class HealthCheckUtils {
         totalMap.put(CRITICAL_TYPE, 0);
         totalMap.put(HEALTH_CHECK_ERROR_TYPE, 0);
         totalMap.put(DEBUG_TYPE, 0);
+    }
+
+    public static FaIcon buildFaIcons(String status) {
+        FaIcon faIcon = new FaIcon();
+        switch (status) {
+            case HEALTH_CHECK_ERROR_TYPE:
+                buildFaInfo(faIcon, "fa fa-exclamation-triangle", "red");
+                break;
+            case WARN_TYPE:
+                buildFaInfo(faIcon, "fa fa-exclamation-triangle", "yellow");
+                break;
+            case OK_TYPE:
+                buildFaInfo(faIcon, "fa fa-check", "green");
+                break;
+            case CRITICAL_TYPE:
+                buildFaInfo(faIcon, "fa fa-exclamation", "red");
+                break;
+            case DEBUG_TYPE:
+                buildFaInfo(faIcon, "fa fa-debug", "gray");
+                break;
+            case INFO_TYPE:
+                buildFaInfo(faIcon, "fa fa-file", "black");
+                break;
+            case IMPORTANT_TYPE:
+                buildFaInfo(faIcon, "fa fa-close", "black");
+                break;
+        }
+        return faIcon;
+    }
+
+    private static void buildFaInfo(FaIcon faIcon, String s, String red) {
+        faIcon.setFaIcon(s);
+        faIcon.setColor(red);
     }
 
 }

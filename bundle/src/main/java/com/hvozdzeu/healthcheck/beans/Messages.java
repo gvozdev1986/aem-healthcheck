@@ -24,11 +24,4 @@ public class Messages {
         this.message = message;
     }
 
-    @Override
-    public String toString() {
-        return "Messages{" +
-            "logType='" + logType + '\'' +
-            ", message='" + message + '\'' +
-            '}';
-    }
 }

@@ -1,13 +1,17 @@
 package com.hvozdzeu.healthcheck.beans;
 
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Response {
 
+    @JsonProperty
     private List<Items> items;
+
+    @JsonProperty
     private Total total;
 
     public List<Items> getItems() {
@@ -26,11 +30,4 @@ public class Response {
         this.total = total;
     }
 
-    @Override
-    public String toString() {
-        return "Response{" +
-            "healthCheckResult=" + items +
-            ", healthCheckTotalResult=" + total +
-            '}';
-    }
 }

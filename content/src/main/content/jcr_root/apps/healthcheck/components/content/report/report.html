@@ -1,11 +1,16 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head data-sly-use.clientLib="${'/libs/granite/sightly/templates/clientlib.html'}">
     <link rel="shortcut icon" href="/content/dam/healthcheckreport/images/favicon.ico" type="image/x-icon">
-    <meta data-sly-call="${clientLib.all @ categories='healthcheck.report'}" data-sly-unwrap/>
+    <meta data-sly-call="${clientLib.all @ categories='healthcheck'}" data-sly-unwrap/>
     <title>HCReport</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
-<p>HCReport</p>
+    <sly data-sly-include="navbar.html" data-sly-unwrap/>
+    <sly data-sly-include="card-header.html" data-sly-unwrap/>
+    <sly data-sly-include="card-report.html" data-sly-unwrap/>
+    <!--<sly data-sly-include="footer-report.html" data-sly-unwrap/>-->
 </body>
 </html>

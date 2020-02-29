@@ -1,8 +1,8 @@
 package com.hvozdzeu.healthcheck.beans;
 
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
+
+import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Metadata {
@@ -53,14 +53,4 @@ public class Metadata {
         this.asyncCronExpression = asyncCronExpression;
     }
 
-    @Override
-    public String toString() {
-        return "Metadata{" +
-            "mBeanName='" + mBeanName + '\'' +
-            ", title='" + title + '\'' +
-            ", serviceId=" + serviceId +
-            ", tags=" + tags +
-            ", asyncCronExpression='" + asyncCronExpression + '\'' +
-            '}';
-    }
 }

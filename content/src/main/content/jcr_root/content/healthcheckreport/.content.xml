@@ -1,7 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
-    jcr:primaryType="cq:Page">
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0"
+          xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+          jcr:primaryType="cq:Page">
     <jcr:content
-        jcr:primaryType="cq:PageContent"
-        sling:resourceType="healthcheck/components/content/report"/>
+            jcr:primaryType="cq:PageContent"
+            sling:resourceType="healthcheck/components/content/report"
+            hcVersion="0.0.1"
+            instVersion="6.4">
+        <data jcr:primaryType="nt:unstructured">
+            <lang jcr:primaryType="nt:unstructured">
+                <en
+                        jcr:primaryType="nt:unstructured"
+                        lbl_date="Date"
+                        lbl_hcVersion="HC version"
+                        lbl_instInformation="Instance information"
+                        lbl_instVersion="Instance version"
+                        lbl_userId="User ID"/>
+                <ru
+                        jcr:primaryType="nt:unstructured"
+                        lbl_date="Дата"
+                        lbl_hcVersion="HC версия"
+                        lbl_instInformation="Информация об окружении"
+                        lbl_instVersion="Версия"
+                        lbl_userId="Пользователь"/>
+            </lang>
+        </data>
+    </jcr:content>
 </jcr:root>

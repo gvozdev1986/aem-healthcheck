@@ -1,26 +1,8 @@
 package com.hvozdzeu.healthcheck.servlets;
 
-import static com.hvozdzeu.healthcheck.constants.HealthCheckConstants.ERROR_CREATE_REPORT;
-import static com.hvozdzeu.healthcheck.utils.HealthCheckUtils.buildMapCountStatus;
-import static com.hvozdzeu.healthcheck.utils.HealthCheckUtils.buildMessagesUrl;
-import static com.hvozdzeu.healthcheck.utils.HealthCheckUtils.buildTotalResult;
-import static com.hvozdzeu.healthcheck.utils.HealthCheckUtils.getResultList;
-import static com.hvozdzeu.healthcheck.utils.HealthCheckUtils.initTotalMap;
-
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.hvozdzeu.healthcheck.beans.Items;
-import com.hvozdzeu.healthcheck.beans.Messages;
-import com.hvozdzeu.healthcheck.beans.Metadata;
-import com.hvozdzeu.healthcheck.beans.Report;
-import com.hvozdzeu.healthcheck.beans.Response;
+import com.hvozdzeu.healthcheck.beans.*;
 import com.hvozdzeu.healthcheck.constants.HealthCheckConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.felix.scr.annotations.Activate;
@@ -41,18 +23,27 @@ import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static com.hvozdzeu.healthcheck.constants.HealthCheckConstants.*;
+import static com.hvozdzeu.healthcheck.utils.HealthCheckUtils.*;
+
 @SlingServlet(
         name = "Health Check Executor Servlet",
-        generateComponent = true,
         methods = {HttpConstants.METHOD_GET},
         paths = {"/system/health"}
 )
 @Property(name = "sling.auth.requirements", value = "-/system/health")
 public class HealthCheckExecutorServlet extends SlingSafeMethodsServlet {
 
+    public static final List<Items> resultList = new ArrayList<>();
     private static final Logger logger = LoggerFactory.getLogger(HealthCheckExecutorServlet.class);
     private static Map<String, Integer> totalResultMap;
-    public static final List<Items> resultList = new ArrayList<>();
 
     static {
         totalResultMap = new HashMap<>();
@@ -67,11 +58,6 @@ public class HealthCheckExecutorServlet extends SlingSafeMethodsServlet {
 
     @Reference
     protected HealthCheckExecutor healthCheckExecutor;
-
-    @Activate
-    protected void activate(ComponentContext context) {
-        logger.debug("Starting HealthCheckExecutorServlet");
-    }
 
     private static List<Messages> getHealthCheckMessageLog(HealthCheckExecutionResult healthCheckResult) {
         List<Messages> messagesList = new ArrayList<>();
@@ -102,11 +88,12 @@ public class HealthCheckExecutorServlet extends SlingSafeMethodsServlet {
             Items checkResult = new Items();
             Report report = new Report();
             report.setName(healthCheckResult.getHealthCheckMetadata() != null ? healthCheckResult.getHealthCheckMetadata().getName() : "");
-            report.setStatus(healthCheckResult.getHealthCheckResult().getStatus().toString());
+            String status = healthCheckResult.getHealthCheckResult().getStatus().toString();
+            report.setStatus(status);
             report.setElapsedTimeInMs(healthCheckResult.getElapsedTimeInMs());
             report.setMetadata(getHealthCheckMetadata(healthCheckResult));
             report.setMessages(getHealthCheckMessageLog(healthCheckResult));
-            initTotalMap(totalResultMap);
+            report.setFaIcon(buildFaIcons(status));
             buildMapCountStatus(totalResultMap, healthCheckResult.getHealthCheckResult().getStatus().toString());
             checkResult.setReport(report);
             checkResultList.add(checkResult);
@@ -124,6 +111,11 @@ public class HealthCheckExecutorServlet extends SlingSafeMethodsServlet {
         return response;
     }
 
+    @Activate
+    protected void activate(ComponentContext context) {
+        logger.debug("Starting HealthCheckExecutorServlet");
+    }
+
     @Deactivate
     protected void deactivate() {
         logger.debug("Stopping HealthCheckExecutorServlet");
@@ -132,6 +124,9 @@ public class HealthCheckExecutorServlet extends SlingSafeMethodsServlet {
     @Override
     protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response)
             throws IOException {
+
+        initTotalMap(totalResultMap);
+
         response.setContentType(HealthCheckConstants.APPLICATION_JSON);
         response.setHeader(HealthCheckConstants.CACHE_CONTROL, HealthCheckConstants.CACHE_CONTROL_VALUE);
 
@@ -144,20 +139,7 @@ public class HealthCheckExecutorServlet extends SlingSafeMethodsServlet {
         options.setForceInstantExecution(true);
         List<HealthCheckExecutionResult> results = healthCheckExecutor.execute(options, tags);
 
-        boolean allOk = true;
-        for (HealthCheckExecutionResult result : results) {
-            if (!result.getHealthCheckResult().isOk()) {
-                allOk = false;
-                break;
-            }
-        }
-
-        if (!allOk) {
-            response.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
-        } else {
-            response.setStatus(HttpServletResponse.SC_OK);
-        }
-
+        response.setStatus(HttpServletResponse.SC_OK);
         ObjectMapper mapper = new ObjectMapper();
         mapper.enable(SerializationFeature.WRAP_ROOT_VALUE);
         String json = mapper.writeValueAsString(generateResponse(results));

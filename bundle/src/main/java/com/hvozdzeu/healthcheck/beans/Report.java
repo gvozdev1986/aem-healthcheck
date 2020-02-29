@@ -1,8 +1,8 @@
 package com.hvozdzeu.healthcheck.beans;
 
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
+
+import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Report {
@@ -13,6 +13,7 @@ public class Report {
     private Metadata metadata;
     private List<Messages> messages;
     private String messagesUrl;
+    private FaIcon faIcon;
 
     public String getName() {
         return name;
@@ -62,15 +63,11 @@ public class Report {
         this.messagesUrl = messagesUrl;
     }
 
-    @Override
-    public String toString() {
-        return "Report{" +
-            "name='" + name + '\'' +
-            ", status='" + status + '\'' +
-            ", elapsedTimeInMs=" + elapsedTimeInMs +
-            ", metadata=" + metadata +
-            ", messages=" + messages +
-            ", messagesUrl='" + messagesUrl + '\'' +
-            '}';
+    public FaIcon getFaIcon() {
+        return faIcon;
+    }
+
+    public void setFaIcon(FaIcon faIcon) {
+        this.faIcon = faIcon;
     }
 }

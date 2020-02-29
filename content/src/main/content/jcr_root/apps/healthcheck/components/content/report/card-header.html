@@ -1,0 +1,82 @@
+<sly data-sly-use.langModel="${'com.hvozdzeu.healthcheck.models.LanguageModel'}">
+    <div class="card">
+        <div class="card-header">
+            <i class="fa fa-bars btnCard" data-toggle="collapse" data-target="#healthDetailCollapse"
+               aria-expanded="false" aria-controls="healthDetailCollapse"></i>
+            <span style="margin-left: 5px;">AEM Instance Health Check Report</span>
+        </div>
+        <div class="collapse" id="healthDetailCollapse">
+            <div class="card-body">
+                <h4 class="card-title">${langModel.lblInstInformation}</h4>
+                <table class="table table-sm">
+                    <thead>
+                    <tr>
+                        <th scope="col">${langModel.lblInstVersion}:</th>
+                        <th scope="col">${langModel.lblHcVersion}:</th>
+                        <th scope="col">${langModel.lblDate}:</th>
+                        <th scope="col">${langModel.lblUserId}:</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <sly data-sly-use.userModel="com.hvozdzeu.healthcheck.models.LogInUserModel">
+                        <tr>
+                            <td>${pageProperties.instVersion @ context='html'}</td>
+                            <td>${pageProperties.hcVersion @ context='html'}</td>
+                            <td><p id="date"></p></td>
+                            <td>${userModel.user}</td>
+                        </tr>
+                    </sly>
+                    </tbody>
+                </table>
+                <sly data-sly-use.totalModel="com.hvozdzeu.healthcheck.models.TotalReportModel">
+                    <h4 class="card-title">Report information. Total checks - ${totalModel.total.totalItems}</h4>
+                    <table class="table table-hover table-sm">
+                        <thead>
+                        <tr>
+                            <th scope="col">Type:</th>
+                            <th scope="col">Count:</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>Health check report</td>
+                            <td>${totalModel.total.healthCheckError}</td>
+                        </tr>
+                        <tr>
+                            <td>Important</td>
+                            <td>${totalModel.total.important}</td>
+                        </tr>
+                        <tr>
+                            <td>Information</td>
+                            <td>${totalModel.total.info}</td>
+                        </tr>
+                        <tr>
+                            <td>Ok</td>
+                            <td>${totalModel.total.ok}</td>
+                        </tr>
+                        <tr>
+                            <td>Debug</td>
+                            <td>${totalModel.total.debug}</td>
+                        </tr>
+                        <tr>
+                            <td>Warning</td>
+                            <td>${totalModel.total.warn}</td>
+                        </tr>
+                        <tr>
+                            <td>Critical</td>
+                            <td>${totalModel.total.critical}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </sly>
+            </div>
+        </div>
+    </div>
+</sly>
+<script>
+    n = new Date();
+    y = n.getFullYear();
+    m = n.getMonth() + 1;
+    d = n.getDate();
+    document.getElementById("date").innerHTML = m + "/" + d + "/" + y;
+</script>

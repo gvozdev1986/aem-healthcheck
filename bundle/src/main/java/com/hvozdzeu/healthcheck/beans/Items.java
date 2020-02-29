@@ -1,13 +1,14 @@
 package com.hvozdzeu.healthcheck.beans;
 
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
+
+import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Items {
 
     private Report report;
+
     private List<Messages> healthCheckMessage;
 
     public Report getReport() {
@@ -26,11 +27,4 @@ public class Items {
         this.healthCheckMessage = healthCheckMessage;
     }
 
-    @Override
-    public String toString() {
-        return "HealthCheckResult{" +
-            "healthCheckItemHeader=" + report +
-            ", healthCheckMessage=" + healthCheckMessage +
-            '}';
-    }
 }

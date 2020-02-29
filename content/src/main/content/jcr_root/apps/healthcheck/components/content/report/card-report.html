@@ -1,0 +1,37 @@
+<div class="card">
+    <div class="card-header">
+        <i class="fa fa-bars btnCard" data-toggle="collapse" data-target="#healthReportCollapse"
+           aria-expanded="false" aria-controls="healthReportCollapse"></i>
+        <span style="margin-left: 5px;">Report</span>
+    </div>
+    <div class="collapse" id="healthReportCollapse">
+        <div class="card-body">
+            <sly data-sly-use.report="com.hvozdzeu.healthcheck.models.TotalReportModel">
+                <ul data-sly-list.item="${report.response.items}" data-sly-unwrap>
+                    <div class="card">
+                        <div class="card-header" style="height: 2px;">
+                            <p class="reportCardHeaderLbl">
+                                <i class="${item.report.faIcon.faIcon}"
+                                   style="color: ${item.report.faIcon.color @ context='styleString'}"></i>
+                                Title: ${item.report.metadata.title}</p>
+                        </div>
+                        <div class="card-body" style="height: 60px;">
+                            <p class="card-text-hc" style="margin-top: -18px; font-size: 13px;">
+                                Name: ${item.report.name}</p>
+                            <p class="card-text-hc" style="font-size: 13px;">Status: ${item.report.status}</p>
+                            <p class="card-text-hc" style="font-size: 13px;">Tags: ${item.report.metadata.tags}</p>
+                            <button class="btn messageBtm" type="submit"><i class="fa fa-book"></i></button>
+                        </div>
+                        <div class="card-footer text-muted" style="height: 2px;">
+                            <p class="card-text-hc tagsLbl">Tags: ${item.report.metadata.tags}</p>
+                            <p class="card-text-hc timeLbl">Time: ${item.report.elapsedTimeInMs} ms</p>
+                        </div>
+                    </div>
+                    <div>
+                        <p></p>
+                    </div>
+                </ul>
+            </sly>
+        </div>
+    </div>
+</div>
