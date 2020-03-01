@@ -1,55 +1,43 @@
 package com.hvozdzeu.healthcheck.models;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.adobe.cq.sightly.WCMUsePojo;
 import com.hvozdzeu.healthcheck.beans.Messages;
 import com.hvozdzeu.healthcheck.beans.Metadata;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.models.annotations.DefaultInjectionStrategy;
-import org.apache.sling.models.annotations.Exporter;
-import org.apache.sling.models.annotations.ExporterOption;
 import org.apache.sling.models.annotations.Model;
-import org.apache.sling.models.annotations.injectorspecific.Self;
 
-import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static com.hvozdzeu.healthcheck.constants.HealthCheckConstants.ERROR_CREATE_REPORT;
-import static com.hvozdzeu.healthcheck.constants.HealthCheckConstants.HTTP_PARAM_REPORT_ID;
 import static com.hvozdzeu.healthcheck.servlets.HealthCheckExecutorServlet.resultList;
 import static com.hvozdzeu.healthcheck.utils.HealthCheckUtils.*;
 
-@Model(
-        adaptables = {SlingHttpServletRequest.class, Resource.class},
-        resourceType = {"healthcheck/components/content/report"},
-        defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL
-)
-@Exporter(name = "jackson", extensions = "json", selector = "report", options = {
-        @ExporterOption(name = "MapperFeature.SORT_PROPERTIES_ALPHABETICALLY", value = "true"),
-        @ExporterOption(name = "SerializationFeature.WRITE_DATES_AS_TIMESTAMPS", value = "false")
-})
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class MessagesReportModel {
+@Model(adaptables = {SlingHttpServletRequest.class, Resource.class})
+public class MessagesReportComponentModel extends WCMUsePojo {
 
-    @Self
-    private SlingHttpServletRequest request;
     private Metadata metadata;
-    private Integer reportId;
+    private String reportId;
     private String message;
     private List<Messages> messagesList;
     private String backUrl;
     private Map<String, Integer> totalTypes;
 
-    @PostConstruct
-    private void init() {
-        reportId = Integer.valueOf(request.getParameter(HTTP_PARAM_REPORT_ID));
+    @Override
+    public void activate() {
+        reportId = "3";//get("reportId", String.class);
+        System.out.println(reportId);
+        getReportById();
+    }
+
+    private void getReportById() {
         messagesList = new ArrayList<>();
         if (!resultList.isEmpty()) {
-            metadata = resultList.get(reportId - 1).getReport().getMetadata();
-            messagesList = resultList.get(reportId - 1).getReport().getMessages();
+            metadata = resultList.get(Integer.parseInt(reportId) - 1).getReport().getMetadata();
+            messagesList = resultList.get(Integer.parseInt(reportId) - 1).getReport().getMessages();
             backUrl = buildBackUrl();
             buildTotalTypes();
         } else {
@@ -73,11 +61,11 @@ public class MessagesReportModel {
         this.metadata = metadata;
     }
 
-    public Integer getReportId() {
+    public String getReportId() {
         return reportId;
     }
 
-    public void setReportId(Integer reportId) {
+    public void setReportId(String reportId) {
         this.reportId = reportId;
     }
 
@@ -112,4 +100,5 @@ public class MessagesReportModel {
     public void setTotalTypes(Map<String, Integer> totalTypes) {
         this.totalTypes = totalTypes;
     }
+
 }
