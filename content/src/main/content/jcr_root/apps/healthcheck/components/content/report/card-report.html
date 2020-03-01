@@ -26,7 +26,7 @@
                                     data-target="#myModal_${itemList.index @ context='scriptString'}"><i
                                     class="fa fa-book"></i></button>
                             <div class="modal fade" id="myModal_${itemList.index @ context='scriptString'}" role="dialog">
-                                 <sly data-sly-use.modalReport="com.hvozdzeu.healthcheck.models.MessagesReportComponentModel" @ reportId="${itemList.index}">
+                                 <sly data-sly-use.modalReport="com.hvozdzeu.healthcheck.models.MessagesReportComponentModel" @ id="${itemList.index @ context='unsafe'}">
                                     <div class="modal-dialog">
                                         <div class="modal-content" style="border-radius: 0px;">
                                             <div class="modal-header" style="background-color: #343a40; color: #fff; border-radius: 0px;">

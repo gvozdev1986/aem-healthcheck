@@ -6,6 +6,8 @@ import com.hvozdzeu.healthcheck.beans.Metadata;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,6 +21,8 @@ import static com.hvozdzeu.healthcheck.utils.HealthCheckUtils.*;
 @Model(adaptables = {SlingHttpServletRequest.class, Resource.class})
 public class MessagesReportComponentModel extends WCMUsePojo {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(MessagesReportComponentModel.class);
+
     private Metadata metadata;
     private String reportId;
     private String message;
@@ -28,7 +32,9 @@ public class MessagesReportComponentModel extends WCMUsePojo {
 
     @Override
     public void activate() {
-        reportId = "3";//get("reportId", String.class);
+        LOGGER.debug("Init method");
+        reportId = getProperties().get("id", String.class);
+        LOGGER.debug("Get ID: " + reportId);
         System.out.println(reportId);
         getReportById();
     }
