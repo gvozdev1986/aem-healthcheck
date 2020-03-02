@@ -25,26 +25,26 @@
                                     data-toggle="modal"
                                     data-target="#myModal_${itemList.index @ context='scriptString'}"><i
                                     class="fa fa-book"></i></button>
-                            <div class="modal fade" id="myModal_${itemList.index @ context='scriptString'}" role="dialog">
-                                 <sly data-sly-use.modalReport="com.hvozdzeu.healthcheck.models.MessagesReportComponentModel" @ id="${itemList.index @ context='unsafe'}">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content" style="border-radius: 0px;">
-                                            <div class="modal-header" style="background-color: #343a40; color: #fff; border-radius: 0px;">
-                                                <h4 class="modal-title" style="font-size: 15px;top: 5px; position: absolute;">${modalReport.metadata.title}</h4>
-                                            </div>
-                                            <div class="modal-body">
-                                                <ul data-sly-list.itemModelReport="${modalReport.messagesList}" data-sly-unwrap>
-                                                    <p>[${itemModelReport.logType}] ${itemModelReport.message}</p>
-                                                </ul>
-                                            </div>
-                                            <div class="modal-footer" style="height: 20px; border-radius: 0px;">
-                                                <button type="button" class="btn btn-default" style="position: absolute; top: 61px; right: 1px;" data-dismiss="modal"><i class="fa fa-close"></i> Close
-                                                </button>
-                                            </div>
+                            <sly data-sly-use.modalReport="com.hvozdzeu.healthcheck.models.MessagesReportComponentModel" @ id="${itemList.index @ context='unsafe'}">
+                                <div class="modal fade" id="myModal_${itemList.index @ context='scriptString'}" role="dialog">
+                                        <div class="modal-dialog">
+                                                <div class="modal-content" style="border-radius: 0px;">
+                                                    <div class="modal-header" style="background-color: #343a40; color: #fff; border-radius: 0px;">
+                                                        <h4 class="modal-title" style="font-size: 15px;top: 5px; position: absolute;">${modalReport.metadata.title}</h4>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <ul data-sly-list.itemModelReport="${modalReport.messagesList}" data-sly-unwrap>
+                                                            <p>[${itemModelReport.logType}] ${itemModelReport.message}</p>
+                                                        </ul>
+                                                    </div>
+                                                    <div class="modal-footer" style="height: 20px; border-radius: 0px;">
+                                                        <button type="button" class="btn btn-default" style="position: absolute; top: 61px; right: 1px;" data-dismiss="modal"><i class="fa fa-close"></i> Close
+                                                        </button>
+                                                    </div>
+                                                </div>
                                         </div>
-                                    </div>
-                                </sly>
-                            </div>
+                                </div>
+                            </sly>
                         </div>
                         <div class="card-footer text-muted" style="height: 2px;">
                             <p class="card-text-hc tagsLbl">Tags: ${item.report.metadata.tags}</p>
